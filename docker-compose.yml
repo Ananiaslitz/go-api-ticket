@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: goapp_db
+    environment:
+      POSTGRES_USER: goappuser
+      POSTGRES_PASSWORD: goapppassword
+      POSTGRES_DB: goapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - bubble
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: goapp
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: goappuser
+      DB_PASSWORD: goapppassword
+      DB_NAME: goapp
+    networks:
+      - bubble
+
+volumes:
+  db_data:
+
+networks:
+  bubble:
+    external: true
